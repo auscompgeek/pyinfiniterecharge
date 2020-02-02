@@ -1,30 +1,35 @@
 from magicbot import feedback
+import wpilib
 
 
 class Indexer:
     indexer_motors: list
     indexer_switches: list
+    ready_piston: wpilib.DigitalInput
 
     def on_enable(self) -> None:
+        for motor in self.indexer_motors:
+            motor.setInverted(True)
         self.indexing = True
+        self.speed = 0.2
 
     def execute(self) -> None:
         if self.indexing:
-            motor_states = [True] * len(self.indexer_motors)
-            switch_results = [switch.get() for switch in self.indexer_switches]
-            # Test the back switch (because all others require 2 switches)
-            if not switch_results[0]:
-                motor_states[0] = False
+            for i, (motor, switch) in enumerate(
+                zip(
+                    self.indexer_motors,
+                    [switch.get() for switch in self.indexer_switches],
+                )
+            ):
 
-            # Disable motor if switch and previous switch are pressed
-            for i in range(1, len(motor_states)):
-                if not switch_results[i] and not switch_results[i - 1]:
-                    motor_states[i] = False
-
-            # Set all motors to required states
-            for motor_state, motor in zip(motor_states, self.indexer_motors):
-                if motor_state:
-                    motor.set(1)
+                if switch:
+                    if not i:
+                        if not self.ready_piston.get():
+                            motor.set(self.speed * 2)
+                        else:
+                            motor.stopMotor()
+                    else:
+                        motor.set(self.speed)
                 else:
                     motor.stopMotor()
         else:

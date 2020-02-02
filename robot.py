@@ -46,11 +46,18 @@ class MyRobot(magicbot.MagicRobot):
         self.hang_winch_motor_slave = ctre.WPI_TalonSRX(22)
         self.hang_kracken_hook_latch = wpilib.DoubleSolenoid(4, 5)
 
-        self.indexer_motors = [ctre.WPI_TalonSRX(3)]
-        self.indexer_switches = [wpilib.DigitalInput(9)]
+        self.indexer_motors = [ctre.WPI_TalonSRX(3), wpilib.Spark(2), wpilib.Spark(1)]
+        # Motors and switches created from injector [0] to intake [4]
+        # Or in this case from injector[0] to half-indexer [2]
+        self.indexer_switches = [
+            wpilib.DigitalInput(9),
+            wpilib.DigitalInput(8),
+            wpilib.DigitalInput(7),
+        ]
+        self.ready_piston = wpilib.DigitalInput(4)
         self.injector_slave_motor = ctre.WPI_TalonSRX(43)
         self.injector_slave_motor.follow(self.indexer_motors[0])
-        self.injector_slave_motor.setInverted(True)
+        self.injector_slave_motor.setInverted(False)
 
         self.led = wpilib._wpilib.AddressableLED(0)
         self.loading_piston = wpilib.Solenoid(0)
@@ -58,6 +65,7 @@ class MyRobot(magicbot.MagicRobot):
         self.shooter_outer_motor = rev.CANSparkMax(2, rev.MotorType.kBrushless)
 
         self.colour_sensor = rev.color.ColorSensorV3(wpilib.I2C.Port.kOnboard)
+
         self.spinner_motor = wpilib.Spark(2)
         self.spinner_solenoid = wpilib.DoubleSolenoid(2, 3)
 
@@ -86,7 +94,10 @@ class MyRobot(magicbot.MagicRobot):
             else:
                 self.turret.slew(-about_five_degrees)
 
-        if self.driver_joystick.getRawButtonPressed(6):
+        self.indexer.speed = scale_value(
+            self.joystick_left.getThrottle(), 1, -1, 0, 0.5
+        )
+        if self.joystick_left.getRawButtonPressed(6):
             if self.indexer.indexing:
                 self.indexer.disable_indexing()
             else:
