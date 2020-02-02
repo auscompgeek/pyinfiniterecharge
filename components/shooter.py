@@ -8,6 +8,7 @@ class Shooter:
     outer_motor: rev.CANSparkMax
     centre_motor: rev.CANSparkMax
     loading_piston: wpilib.Solenoid
+    ready_piston: wpilib.DigitalInput
 
     led: wpilib._wpilib.AddressableLED
 
@@ -126,7 +127,7 @@ class Shooter:
 
         based off of the pistons current state
         """
-        return self.loading_piston.get()
+        return self.ready_piston.get() or self.loading_piston.get()
 
     @feedback
     def is_in_range(self) -> bool:
