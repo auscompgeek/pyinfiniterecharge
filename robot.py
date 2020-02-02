@@ -94,7 +94,9 @@ class MyRobot(magicbot.MagicRobot):
             else:
                 self.turret.slew(-about_five_degrees)
 
-        if self.driver_joystick.getRawButtonPressed(6):
+
+        self.indexer.speed = scale_value(self.joystick_left.getThrottle(), 1, -1, 0, 0.5)
+        if self.joystick_left.getRawButtonPressed(6):
             if self.indexer.indexing:
                 self.indexer.disable_indexing()
             else:
