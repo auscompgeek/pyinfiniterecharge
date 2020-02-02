@@ -1,4 +1,4 @@
-from magicbot import feedback
+from magicbot import feedback, will_reset_to
 import wpilib
 
 
@@ -7,6 +7,8 @@ class Indexer:
     indexer_switches: list
     ready_piston: wpilib.DigitalInput
 
+    jogging = will_reset_to(False)
+
     def on_enable(self) -> None:
         for motor in self.indexer_motors:
             motor.setInverted(True)
@@ -14,6 +16,11 @@ class Indexer:
         self.speed = 0.2
 
     def execute(self) -> None:
+        if self.jogging:
+            for i, motor in enumerate(self.indexer_motors):
+                motor.set(self.speed if i != 0 else 0)
+            return
+
         if self.indexing:
             for i, (motor, switch) in enumerate(
                 zip(
@@ -41,6 +48,10 @@ class Indexer:
 
     def disable_indexing(self) -> None:
         self.indexing = False
+
+    def jog(self) -> None:
+        """Run the indexer motors only (excluding the injector)."""
+        self.jogging = True
 
     @feedback
     def balls_loaded(self) -> int:
