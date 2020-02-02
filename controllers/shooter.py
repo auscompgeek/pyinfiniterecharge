@@ -38,6 +38,10 @@ class ShooterController:
         self.distance = None
         self.initial_call = True
 
+    def on_enable(self) -> None:
+        self.initial_call = True
+        self.state = self.searching
+
     def execute(self) -> None:
         """
         tempoary replacement of magicbot statemachine
