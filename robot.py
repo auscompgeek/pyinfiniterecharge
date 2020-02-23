@@ -24,7 +24,7 @@ from components.led_screen import LEDScreen
 from controllers.shooter import ShooterController
 from controllers.spinner import SpinnerController
 from utilities import git
-from utilities.functions import scale_value
+from utilities.functions import rescale_js, scale_value
 from utilities.nav_x import NavX
 
 GIT_COMMIT = git.describe()
@@ -134,8 +134,8 @@ class MyRobot(magicbot.MagicRobot):
 
     def handle_chassis_inputs(self, joystick: wpilib.Joystick) -> None:
         scaled_throttle = scale_value(joystick.getThrottle(), 1, -1, 0, 1)
-        vx = scale_value(joystick.getY(), 1, -1, -3, 3, 2) * scaled_throttle
-        vz = scale_value(joystick.getTwist(), 1, -1, -3, 3, 2) * scaled_throttle
+        vx = rescale_js(joystick.getY(), 0.1, 3 * scaled_throttle)
+        vz = rescale_js(joystick.getTwist(), 0.1, 3 * scaled_throttle)
         self.chassis.drive(vx, vz)
 
     def handle_shooter_inputs(self, joystick: wpilib.Joystick) -> None:
