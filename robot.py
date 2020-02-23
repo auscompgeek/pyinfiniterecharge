@@ -139,8 +139,8 @@ class MyRobot(magicbot.MagicRobot):
 
     def handle_chassis_inputs(self, joystick: wpilib.Joystick) -> None:
         scaled_throttle = scale_value(joystick.getThrottle(), 1, -1, 0, 1)
-        vx = rescale_js(joystick.getY(), 0.1, 3 * scaled_throttle)
-        vz = rescale_js(joystick.getTwist(), 0.1, 3 * scaled_throttle)
+        vx = rescale_js(-joystick.getY(), 0.1, 3 * scaled_throttle)
+        vz = rescale_js(-joystick.getTwist(), 0.1, 3 * scaled_throttle)
         self.chassis.drive(vx, vz)
 
     def handle_shooter_inputs(self, joystick: wpilib.Joystick) -> None:
