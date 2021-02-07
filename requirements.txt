@@ -1,5 +1,5 @@
 numpy ~= 1.19
-robotpy-ctre ~= 2021.1.2
+robotpy-ctre ~= 2021.2.2
 robotpy-navx ~= 2021.0.0
 robotpy-rev ~= 2021.0.2
 robotpy-wpilib-utilities ~= 2021.0.1
